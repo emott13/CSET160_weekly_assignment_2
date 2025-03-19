@@ -6,7 +6,7 @@
         text-align: center;
     }
     .input_field {
-      width: 100%;
+      width: 300px;
       padding: 12px 20px;
       margin: 8px 0;
       display: inline-block;
@@ -16,7 +16,7 @@
     }
 
     .input_submit {
-      width: 100%;
+      width: 300px;
       background-color: #4CAF50;
       color: white;
       padding: 14px 20px;
@@ -32,15 +32,11 @@
 </style>
 {% extends "base.html" %}
 {% block body %}
-    <h2 style="text-align: center;">Welcome</h2>
+    <h2 style="text-align: center;">Search for a boat</h2>
     <div class="body">
-        <h2>{{errorMessage}}</h2>
+        <h2 style="min-height: 20px;">{{errorMessage}}</h2>
         <form action="/search" method="POST">
             <input type="number" name="id" placeholder="ID" class="input_field"> <br>
-            <input type="text" name="name" placeholder="Boat name" class="input_field"> <br>
-            <input type="text" name="type" placeholder="Boat type" class="input_field"> <br>
-            <input type="number" name="owner_id" placeholder="Owner ID" class="input_field"> <br>
-            <input type="number" name="rental_price" placeholder="Rental price" class="input_field" step="0.01"> <br>
             <input type="submit" value="Submit" class="input_submit">
         </form>
     </div>

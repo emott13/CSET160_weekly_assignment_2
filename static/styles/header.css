@@ -35,8 +35,15 @@ header li {
 
 .mainDiv {
   margin: auto;
-  width: 30%;
-
+  width: 600px;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  align-items: center;
+}
+ul.boats{
+  display: flex;
+  align-items: center;
+  margin: 10px;
 }
 
 h1{
@@ -47,6 +54,27 @@ header a{
   text-decoration:none;
   color:black;
 }
+
+/* BOAT CARDS */
+
+.boats{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px;
+  padding: 0px;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(148, 148, 148);
+  text-align: center;
+  border-radius: 25px;
+}
+
+li{
+  list-style: none;
+}
+
+
 
 /* FOOTER */
 
@@ -76,6 +104,7 @@ body {
   color: #2f2f2f;
   background-color: #fff;
   border-top: 1px solid #e5e5e5;
+  margin-top: 50px;
 }
 
 .footer > * {
