@@ -1,4 +1,38 @@
-{% extends "base.html" %}
+<style>
+    .boatContainer{
+        display: grid; 
+        grid-template-columns: auto auto auto;
+        gap: 5px;
+        text-align: center;
+    }
+    .boats{
+        /* display: grid; */
+        /* grid-template-columns: auto auto; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 5px;
+        width: 100px;
+        height: 100px;
+        background-color: rgb(148, 148, 148);
+        text-align: center;
+    }
+    li{
+        list-style: none;
+    }
+</style>
+{%extends 'base.html'%}
 {% block body %}
-    <h2 style="text-align: center;">Welcome</h2>
+<h1 style="text-align: center;">Welcome</h1>
+<div class="boatsContainer">
+    {% for boat in boats %}
+        <ul class="boats">
+            <li class="boat">{{boat[0]}}</li>
+            <li class="boat">{{boat[1]}}</li>
+            <li class="boat">{{boat[2]}}</li>
+            <li class="boat">{{boat[3]}}</li>
+            <li class="boat">{{boat[4]}}</li>
+        </ul>
+    {% endfor %}
+</div>
 {% endblock %}

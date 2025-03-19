@@ -15,19 +15,11 @@ conn = engine.connect()                                                     # co
 # ---- / & /index ---- #
 
 @app.route('/')                                                             # if route is '/'
+@app.route('/index')
 @app.route('/index.html')                                                   # if route is '/index.html'
-def display():
-    return render_template('index.html')                                    # load index
-
-# ---- /boats ---- #
-
-@app.route('/boats.html')                                                   # /boats.html redirects to /boats
-def redirectBoats():
-    return redirect('/boats')
-@app.route('/boats')                                                        # if route is '/boats'
 def displayBoats():
     boatsRow = conn.execute(text('SELECT * FROM boats;')).all()             # select everything from table boats in boatdb
-    return render_template('boats.html', boats = boatsRow[:10])             # display boats.html including each boat from selection
+    return render_template('index.html', boats = boatsRow[:10])             # display boats.html including each boat from selection
 
 # ---- /create ---- #
 
@@ -40,9 +32,11 @@ def displayCreate():
         return render_template('create.html')                               # load create.html
     elif request.method == 'POST':                                          # if method is post
         try:
-            conn.execute(text('INSERT INTO boats values(:id, :name, :type, :owner_id, :rental_price)'), request.form)
+            conn.execute(text('INSERT INTO boats '
+            'values(:id, :name, :type, :owner_id, :rental_price)'), 
+            request.form)
             conn.commit()                                                   # insert form data into table
-            return redirect('/boats')                                       # redirect to /boats
+            return redirect('/index')                                       # redirect to /boats
         except IntegrityError:
             errorMessage = 'Integrity error, cannot have duplicates.'
             return render_template('create.html', errorMessage = errorMessage)
@@ -73,15 +67,63 @@ def displaySearch():
 
 # ---- /update ---- #
 
-@app.route('/update.html')
+@app.route('/update', methods=['GET', 'POST'])
+@app.route('/update.html', methods=['GET', 'POST'])
 def displayUpdate():
-    return render_template('update.html')
+    if request.method == 'GET':
+        return render_template('update.html')
+    elif request.method == 'POST':
+        try:
+            boatID = request.form.get('id')
+            result = conn.execute(text('SELECT * FROM boats WHERE id = :id'), {'id': boatID})
+            boatRow = result.fetchone()
+
+            if not boatRow:
+                return render_template('update.html', errorMessage = 'Boat with this ID does not exist.')
+            
+            else: 
+                conn.execute(
+                text('UPDATE boats SET name = :name, type = :type, '
+                'owner_id = :owner_id, rental_price = :rental_price '
+                'WHERE id = :id'), 
+                request.form)
+                conn.commit()
+                return redirect('/index')
+                
+        except:
+            return render_template('update.html', errorMessage = 'An error occured.')
 
 # ---- /delete ---- #
 
-@app.route('/delete.html')
+@app.route('/delete', methods=['GET', 'POST'])
+@app.route('/delete.html', methods=['GET', 'POST'])
 def displayDelete():
-    return render_template('delete.html')
+    if request.method == 'GET':
+        return render_template('delete.html')
+    elif request.method == 'POST':
+        try:
+            boatID = request.form.get('id')
+            result = conn.execute(
+                text('SELECT * FROM boats WHERE id = :id'),
+                {'id': boatID})
+            boatRow = result.fetchone()
+
+            if not boatRow:
+                return render_template(
+                    'delete.html', 
+                    errorMessage = 'Boat with this ID does not exist.'
+                    )
+            
+            else: 
+                conn.execute(
+                text('DELETE FROM boats WHERE id = :id'), 
+                {'id': boatID}
+                )
+                conn.commit()
+                return redirect('/')
+                
+        except Exception as e:
+            return render_template('delete.html', errorMessage = f'An error occured: {str(e)}.')
 
 
 
