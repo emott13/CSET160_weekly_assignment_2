@@ -19,7 +19,7 @@ conn = engine.connect()                                                     # co
 @app.route('/index.html')                                                   # if route is '/index.html'
 def displayBoats():
     boatsRow = conn.execute(text('SELECT * FROM boats;')).all()             # select everything from table boats in boatdb
-    return render_template('index.html', boats = boatsRow[:10])             # display boats.html including each boat from selection
+    return render_template('index.html', boats = boatsRow[:20])             # display boats.html including each boat from selection
 
 # ---- /create ---- #
 
