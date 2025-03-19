@@ -3,7 +3,7 @@
         margin: auto;
     }
     .input_field {
-      width: 100%;
+      width: 300px;
       padding: 12px 20px;
       margin: 8px 0;
       display: inline-block;
@@ -13,7 +13,7 @@
     }
 
     .input_submit {
-      width: 100%;
+      width: 300px;
       background-color: #4CAF50;
       color: white;
       padding: 14px 20px;
@@ -30,6 +30,7 @@
 {% extends "base.html" %}
 {% block body %}
     <div class="body">
+        <h1>Create a new boat:</h1>
         <h2>{{errorMessage}}</h2>
         <form action="/create" method="POST">
             <input type="number" name="id" placeholder="ID" class="input_field"> <br>

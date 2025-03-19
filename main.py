@@ -12,54 +12,78 @@ connectionString = "mysql://root:cset155@localhost/boatdb"                  # co
 engine = create_engine(connectionString, echo = True)                       # engine
 conn = engine.connect()                                                     # connection
 
+# ---- / & /index ---- #
+
 @app.route('/')                                                             # if route is '/'
+@app.route('/index.html')                                                   # if route is '/index.html'
 def display():
     return render_template('index.html')                                    # load index
 
-@app.route('/boats.html')                                                   # if route is '/boats'
+# ---- /boats ---- #
+
+@app.route('/boats.html')                                                   # /boats.html redirects to /boats
+def redirectBoats():
+    return redirect('/boats')
+@app.route('/boats')                                                        # if route is '/boats'
 def displayBoats():
     boatsRow = conn.execute(text('SELECT * FROM boats;')).all()             # select everything from table boats in boatdb
     return render_template('boats.html', boats = boatsRow[:10])             # display boats.html including each boat from selection
 
-@app.route('/create.html', methods = ['GET', 'POST'])                       # if route is '/create.html'
+# ---- /create ---- #
+
+@app.route('/create.html', methods = ['GET', 'POST'])                       # /create.html redirects to /create
+def redirectCreate():
+    return redirect('/create')
+@app.route('/create', methods = ['GET', 'POST'])                            # if route is '/create'
 def displayCreate():
     if request.method == 'GET':                                             # if method is get
         return render_template('create.html')                               # load create.html
     elif request.method == 'POST':                                          # if method is post
-        errorMessage = ''                                                   
         try:
             conn.execute(text('INSERT INTO boats values(:id, :name, :type, :owner_id, :rental_price)'), request.form)
-            return redirect('/boats')
+            conn.commit()                                                   # insert form data into table
+            return redirect('/boats')                                       # redirect to /boats
         except IntegrityError:
             errorMessage = 'Integrity error, cannot have duplicates.'
-            return render_template('createBoat.html', errorMessage = errorMessage)
+            return render_template('create.html', errorMessage = errorMessage)
         except:
             errorMessage = 'An error occured.'
-            return render_template('createBoat.html', errorMessage = errorMessage)
+            return render_template('create.html', errorMessage = errorMessage)
+
+# ---- /search ---- #
 
 @app.route('/search.html', methods = ['GET', 'POST'])
+def redirectSearch():
+    return redirect('/search')
+@app.route('/search', methods = ['GET', 'POST'])
 def displaySearch():
     if request.method == 'GET':
-        return render_template('create.html')
+        return render_template('search.html')
     elif request.method == 'POST':
-        errorMessage = ''
         try:
-            conn.execute(text('INSERT INTO boats values(:id, :name, :type, :owner_id, :rental_price)'), request.form)
-            return redirect('/boats')
-        except IntegrityError:
-            errorMessage = 'Integrity error, cannot have duplicates.'
-            return render_template('createBoat.html', errorMessage = errorMessage)
+            boatID = request.form.get('id')
+            result = conn.execute(text('SELECT * FROM boats WHERE id = :id'), {'id': boatID})
+            boatRow = result.fetchall()
+            if boatRow == '' or boatRow == []:
+                return render_template('search.html', errorMessage = 'No items with this ID exist.')
+            return render_template('boats.html', boats = boatRow)
         except:
             errorMessage = 'An error occured.'
-            return render_template('createBoat.html', errorMessage = errorMessage)
+            return render_template('search.html', errorMessage = errorMessage)
+
+# ---- /update ---- #
 
 @app.route('/update.html')
 def displayUpdate():
     return render_template('update.html')
 
+# ---- /delete ---- #
+
 @app.route('/delete.html')
 def displayDelete():
     return render_template('delete.html')
+
+
 
 if __name__ == '__main__':                                                  # runs when not imported
     app.run(debug=True)
